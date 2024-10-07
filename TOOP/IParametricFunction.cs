@@ -62,7 +62,6 @@ namespace Functions
     }
 
     // Функция имеет вид y = a_0 + a_1 * x + a_2 * x^2 + ... + a_n * x^n
-    // Массив параметров выглядит следующим образом: [n, a_0, a_1, ..., a_n]
     class PolynomFunction : IParametricFunction
     {
         private IVector _parameters;
@@ -87,13 +86,10 @@ namespace Functions
                 if (point.Count != 1)
                     throw new ArgumentException("Размерность точки должна равна 1.");
 
-                if (_parameters.Count != _parameters[0] + 1)
-                    throw new ArgumentException("Размерность параметров должна быть равна n + 1.");
+                double res = _parameters[0];
 
-                double res = _parameters[1];
-
-                for(int i = 2; i < _parameters.Count; i++)
-                    res += _parameters[i] * Math.Pow(point[0], i-1);
+                for(int i = 1; i < _parameters.Count; i++)
+                    res += _parameters[i] * Math.Pow(point[0], i);
 
                 return res;
             }

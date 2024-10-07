@@ -6,7 +6,7 @@ class Program
     static void Main()
     {
         // Создаем вектор параметров [n, a0, a1] для функции f(x) = 3 + 5 * x
-        IVector parameters = new Vector(new double[] { 3, 3, 5 });
+        IVector parameters = new Vector(new double[] { 3 });
 
         // Инициализация линейной функции
         IParametricFunction polynomFunc = new PolynomFunction();
@@ -15,7 +15,7 @@ class Program
         var boundFunc = polynomFunc.Bind(parameters);
 
         // Точки для вычисления значения и градиента
-        IVector point1 = new Vector(new double[] { 4, 2 });
+        IVector point1 = new Vector(new double[] { 4 });
         IVector point2 = new Vector(new double[] { -3 });
         IVector point3 = new Vector(new double[] { 10 });
 
