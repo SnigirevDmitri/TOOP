@@ -136,18 +136,20 @@ namespace Functions
 
             public InternalPolyLinearFunction(IVector mesh, IVector parameters)
             {
+                if (parameters.Count != mesh.Count)
+                    throw new ArgumentException("Число параметров неверно.");
                 _mesh = mesh;
                 _parameters = parameters;
             }
 
-            (double xk, double xk1, double yk, double yk1) FindInterval(double input, out int pos)
+            private (int pos, double xk, double xk1, double yk, double yk1) FindInterval(double input)
             {
-                pos = Array.BinarySearch(_mesh.ToArray(), input);
-                if (pos < 0)
-                    pos = ~pos;
+                int p = Array.BinarySearch(_mesh.ToArray(), input);
+                if (p < 0)
+                    p = ~p;
                 try
                 {
-                    return (_mesh[pos - 1], _mesh[pos], _parameters[pos - 1], _parameters[pos]);
+                    return (p, _mesh[p - 1], _mesh[p], _parameters[p - 1], _parameters[p]);
                 }
                 catch
                 {
@@ -165,16 +167,15 @@ namespace Functions
 
                 try
                 {
-                    int pos;
-                    (double x1, double x2, double y1, double y2) = FindInterval(point[0], out pos);
+                    (int p, double x1, double x2, double y1, double y2) = FindInterval(point[0]);
                     return y1 + (y2 - y1) / (x2 - x1) * (point[0] - x1);
                 }
                 catch
                 {
                     if (point[0] < _mesh[0])
-                        return _parameters[0];
-                    else
-                        return _parameters[^1];
+                        return _parameters[0]; // Возвращаем значение в первой точке
+                    else // point[0] > mesh[^1]
+                        return _parameters[^2]; // Возвращаем значение в последней точке
                 }
 
             }
@@ -192,12 +193,11 @@ namespace Functions
 
                 try 
                 {
-                    int pos;
-                    (double x1, double x2, double y1, double y2) = FindInterval(point[0], out pos);
+                    (int p, double x1, double x2, double y1, double y2) = FindInterval(point[0]);
 
 
-                    res[pos - 1] = (x2 - point[0]) / (x2 - x1);
-                    res[pos] = (point[0] - x1) / (x2 - x1);
+                    res[p - 1] = (x2 - point[0]) / (x2 - x1);
+                    res[p] = (point[0] - x1) / (x2 - x1);
                     return res;
                 }
                 catch
@@ -213,6 +213,90 @@ namespace Functions
                         return res;
                     }
                 }
+            }
+        }
+    }
+
+    public class CubicInterpolationHermiteSplineFunction : IParametricFunction
+    {
+        private IVector _parameters;
+        private IVector _mesh;
+
+        public IFunction Bind(IVector parameters)
+        {
+            if (parameters.Count < 1)
+                throw new ArgumentException("Список параметров пуст.");
+            _parameters = parameters;
+            return new InternalCubicInterpolationHermiteSplineFunction(_mesh, _parameters);
+        }
+
+        public CubicInterpolationHermiteSplineFunction(IVector mesh)
+        {
+            if (mesh.Count < 2)
+                throw new ArgumentException("Задано слишком мало точек.");
+            _mesh = mesh;
+        }
+        
+
+        class InternalCubicInterpolationHermiteSplineFunction : IFunction
+        {
+            private readonly IVector _parameters;
+            private readonly IVector _mesh;
+
+            public InternalCubicInterpolationHermiteSplineFunction(IVector mesh, IVector parameters)
+            {
+                if (parameters.Count != mesh.Count * 2)
+                    throw new ArgumentException("Число параметров неверно.");
+                _mesh = mesh;
+                _parameters = parameters;
+            }
+
+            private (int p, double xk, double xk1, double yk, double yk1, double mk, double mk1) FindInterval(double input)
+            {
+                int p = Array.BinarySearch(_mesh.ToArray(), input);
+                if (p < 0)
+                    p = ~p;
+                try
+                {
+                    return (p, _mesh[p - 1], _mesh[p], _parameters[2 * p - 2], _parameters[2 * p], _parameters[2 * p - 1], _parameters[2 * p + 1]);
+                }
+                catch
+                {
+                    throw new ArgumentException("Точка находится вне заданной области.");
+                }
+            }
+
+            public double Value(IVector point)
+            {
+                if (_parameters.Count < 1)
+                    throw new ArgumentException("Параметры не заданы.");
+
+                if (point.Count != 1)
+                    throw new ArgumentException("Размерность точки должна быть равна 1.");
+
+                try
+                {
+                    (int p, double x1, double x2, double y1, double y2, double m1, double m2) = FindInterval(point[0]);
+
+                    double res = 0;
+                    double h = x2 - x1;
+                    double ksi = (point[0] - x1) / h;
+
+                    res += (1 - 3 * ksi * ksi + 2 * ksi * ksi * ksi) * y1;
+                    res += h * (-ksi - 2 * ksi * ksi + ksi * ksi * ksi) * m1;
+                    res += (3 * ksi * ksi - 2 * ksi * ksi * ksi) * y2;
+                    res += h * (-ksi * ksi + ksi * ksi * ksi) * m2;
+
+                    return res;
+                }
+                catch
+                {
+                    if (point[0] < _mesh[0])
+                        return _parameters[0]; // Возвращаем значение в первой точке
+                    else // point[0] > mesh[^1]
+                        return _parameters[^2]; // Возвращаем значение в последней точке
+                }
+
             }
         }
     }
