@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Functionals
 {
-    interface IDifferentiableFunctional : IFunctional
+    public interface IDifferentiableFunctional : IFunctional
     {
         IVector Gradient(IFunction function);
     }
