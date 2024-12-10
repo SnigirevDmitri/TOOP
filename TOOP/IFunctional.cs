@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Functionals
 {
-    interface IFunctional
+    public interface IFunctional
     {
         double Value(IFunction function);
     }

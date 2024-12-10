@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Functions
 {
-    interface IParametricFunction
+    public interface IParametricFunction
     {
         IFunction Bind(IVector parameters);
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Functions
 {
-    interface IFunction
+    public interface IFunction
     {
         double Value(IVector point);
     }
