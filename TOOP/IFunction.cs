@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Functions
+namespace Functions;
+public interface IFunction
 {
-    interface IFunction
-    {
-        double Value(IVector point);
-    }
+    double Value(IVector point);
 }
