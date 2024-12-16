@@ -11,7 +11,7 @@ public interface IParametricFunction
     IFunction Bind(IVector parameters);
 }
 // Функция имеет вид y = a_0 + a_1 * x_1 + a_2 * x_2 + ... + a_n * x_n
-class LinearFunction : IParametricFunction
+public class LinearFunction : IParametricFunction
 {
     private IVector _parameters;
 
@@ -57,11 +57,11 @@ class LinearFunction : IParametricFunction
                 throw new ArgumentException("Размерность точки должна быть на единицу меньше числа параметров.");
 
             var gradient = new Vector();
-
-            for (int i = 0; i < gradient.Count; i++)
+            gradient.Add(1);
+            for (int i = 0; i < _parameters.Count - 1; i++)
             {
-                // Производная по xi равна соответствующему параметру ai, поскольку функция линейная
-                gradient.Add(_parameters[i + 1]);
+                // Производные берём по параметрам
+                gradient.Add(point[i]);
             }
             return gradient;
         }
@@ -69,7 +69,7 @@ class LinearFunction : IParametricFunction
 }
 
 // Функция имеет вид y = a_0 + a_1 * x + a_2 * x^2 + ... + a_n * x^n
-class PolynomFunction : IParametricFunction
+public class PolynomFunction : IParametricFunction
 {
     private IVector _parameters;
 

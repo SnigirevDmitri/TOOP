@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+namespace Optimizators;
 public interface IOptimizator
 {
     IVector Minimize(IFunctional objective,
@@ -112,9 +113,10 @@ public class ConjugateGradient : IOptimizator
         var currentFunction = function.Bind(currentParameters);
         var currentGradient = differentiableObjective.Gradient(currentFunction);
         var searchDirection = op.MultiplyVectorByScalar(currentGradient, -1); // Минус градиент
+        var currentValue = objective.Value(currentFunction);
 
         int iteration = 0;
-        while (op.Norm(currentGradient) > _eps && iteration < _maxIterations)
+        while (currentValue > _eps && iteration < _maxIterations)
         {
             // Определение оптимального шага
             double alpha = LineSearch(differentiableObjective, function, currentParameters, searchDirection);
@@ -140,6 +142,8 @@ public class ConjugateGradient : IOptimizator
             // Обновление текущих значений
             currentParameters = nextParameters;
             currentGradient = nextGradient;
+            currentFunction = function.Bind(currentParameters);
+            currentValue = objective.Value(currentFunction);
 
             iteration++;
         }
@@ -148,19 +152,30 @@ public class ConjugateGradient : IOptimizator
     }
 
     // Простой одномерный поиск для определения шага
-    private double LineSearch(IDifferentiableFunctional objective, IParametricFunction function, IVector parameters, IVector direction)
+    private double LineSearch(IDifferentiableFunctional objective, IParametricFunction function, IVector point, IVector direction)
     {
-        double alpha = 0.1; // Начальный шаг
-        double step = 0.5;
-
-        // Уменьшаем шаг, пока не найдем точку с меньшим значением функционала
-        while (objective.Value(function.Bind(op.AddVectors(parameters, op.MultiplyVectorByScalar(direction, alpha + step)))) >= objective.Value(function.Bind(op.AddVectors(parameters, op.MultiplyVectorByScalar(direction, alpha)))))
+        double alpha = 1;
+        var curpoint = new Vector();
+        for (int i = 0; i < point.Count; i++)
         {
-            step *= 0.5;
+            curpoint.Add(point[i] + alpha * direction[i]);
+        }
+        var curfunction = function.Bind(curpoint);
+        var lastValue = 0.0;
+        var curvalue = objective.Value(curfunction);
+        do
+        {
+            lastValue = curvalue;
+            alpha /= 2;
+            curpoint = new Vector();
+            for (int i = 0; i < point.Count; i++)
+            {
+                curpoint.Add(point[i] + alpha * direction[i]);
             }
-
-        alpha += step;
-        return alpha;
+            curfunction = function.Bind(curpoint);
+            curvalue = objective.Value(curfunction);
+        } while (curvalue < lastValue);
+        return alpha * 2;
     }
 
     // Применение ограничений к вектору параметров
@@ -207,7 +222,7 @@ public class GaussNewton : IOptimizator
         var residual = leastSquaresObjective.Residual(currentFunction);
 
         int iteration = 0;
-        while (iteration < _maxIterations && currentValue < _eps)
+        while (iteration < _maxIterations && currentValue > _eps)
         {
             var jacobian = leastSquaresObjective.Jacobian(currentFunction);
             var jacobianTranspose = op.Transpose(jacobian);
