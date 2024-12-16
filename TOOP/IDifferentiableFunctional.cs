@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Functionals
+namespace Functionals;
+
+public interface IDifferentiableFunctional : IFunctional
 {
-    public interface IDifferentiableFunctional : IFunctional
-    {
-        IVector Gradient(IFunction function);
-    }
+    IVector Gradient(IFunction function);
 }
