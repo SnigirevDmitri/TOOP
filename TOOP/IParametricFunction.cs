@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace Functions
 {
-    public interface IParametricFunction
-    {
-        IFunction Bind(IVector parameters);
-    }
-
     // Функция имеет вид y = a_0 + a_1 * x_1 + a_2 * x_2 + ... + a_n * x_n
     class LinearFunction : IParametricFunction
     {
