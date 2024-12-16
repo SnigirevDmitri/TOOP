@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Functions
+namespace Functions;
+
+public interface IDifferentiableFunction : IFunction
 {
-    public interface IDifferentiableFunction : IFunction
-    {
-        // По параметрам исходной IParametricFunction
-        IVector Gradient(IVector point);
-    }
+    // По параметрам исходной IParametricFunction
+    IVector Gradient(IVector point);
 }

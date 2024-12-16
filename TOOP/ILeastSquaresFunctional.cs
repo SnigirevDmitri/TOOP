@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Functionals
+namespace Functionals;
+
+public interface ILeastSquaresFunctional : IFunctional
 {
-    public interface ILeastSquaresFunctional : IFunctional
-    {
-        IVector Residual(IFunction function);
-        IMatrix Jacobian(IFunction function);
-    }
+    IVector Residual(IFunction function);
+    IMatrix Jacobian(IFunction function);
 }
