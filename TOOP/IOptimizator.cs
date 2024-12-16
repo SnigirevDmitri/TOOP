@@ -34,14 +34,14 @@ public class SimulatedAnnealing : IOptimizator
         {
             currentParameters.Add(param);
         }
-        double currentEnergy = objective.Value(function.Bind(currentParameters));
+        var currentEnergy = objective.Value(function.Bind(currentParameters));
 
         Random random = new Random();
         for (int i = 1; i < _maxIterations; i++)
         {
-            double temperature = GetTemperature(i);
-            IVector newParameters = GenerateNeighbor(currentParameters, minimumParameters, maximumParameters, random);
-            double newEnergy = objective.Value(function.Bind(newParameters));
+            var temperature = GetTemperature(i);
+            var newParameters = GenerateNeighbor(currentParameters, minimumParameters, maximumParameters, random);
+            var newEnergy = objective.Value(function.Bind(newParameters));
 
             if (AcceptanceProbability(currentEnergy, newEnergy, temperature) > random.NextDouble())
             {
@@ -108,10 +108,10 @@ public class ConjugateGradient : IOptimizator
             throw new ArgumentException("Objective functional must be differentiable for Conjugate Gradient method.");
         }
 
-        IVector currentParameters = op.CopyVector(initialParameters);
-        IFunction currentFunction = function.Bind(currentParameters);
-        IVector currentGradient = differentiableObjective.Gradient(currentFunction);
-        IVector searchDirection = op.MultiplyVectorByScalar(currentGradient, -1); // Минус градиент
+        var currentParameters = op.CopyVector(initialParameters);
+        var currentFunction = function.Bind(currentParameters);
+        var currentGradient = differentiableObjective.Gradient(currentFunction);
+        var searchDirection = op.MultiplyVectorByScalar(currentGradient, -1); // Минус градиент
 
         int iteration = 0;
         while (op.Norm(currentGradient) > _eps && iteration < _maxIterations)
@@ -120,7 +120,7 @@ public class ConjugateGradient : IOptimizator
             double alpha = LineSearch(differentiableObjective, function, currentParameters, searchDirection);
 
             // Обновление параметров
-            IVector nextParameters = op.AddVectors(currentParameters, op.MultiplyVectorByScalar(searchDirection, alpha));
+            var nextParameters = op.AddVectors(currentParameters, op.MultiplyVectorByScalar(searchDirection, alpha));
 
             // Проверка границ
             if (minimumParameters != null || maximumParameters != null)
@@ -128,8 +128,8 @@ public class ConjugateGradient : IOptimizator
                 nextParameters = ApplyConstraints(nextParameters, minimumParameters, maximumParameters);
             }
 
-            IFunction nextFunction = function.Bind(nextParameters);
-            IVector nextGradient = differentiableObjective.Gradient(nextFunction);
+            var nextFunction = function.Bind(nextParameters);
+            var nextGradient = differentiableObjective.Gradient(nextFunction);
 
             // Вычисление коэффициента beta 
             double beta = op.VecVecMult(nextGradient, nextGradient) / op.VecVecMult(currentGradient, currentGradient);
