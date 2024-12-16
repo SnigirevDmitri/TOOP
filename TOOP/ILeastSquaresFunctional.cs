@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Functionals
 {
-    interface ILeastSquaresFunctional : IFunctional
+    public interface ILeastSquaresFunctional : IFunctional
     {
         IVector Residual(IFunction function);
         IMatrix Jacobian(IFunction function);
