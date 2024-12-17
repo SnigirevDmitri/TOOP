@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
     tags:
-      - 'v 1.0.0'
+      - 'v1.0.0'
 
 jobs:
   build:
@@ -32,14 +32,25 @@ jobs:
 
     - name: Create Release Archive
       run: |
-        7z a release.zip ./publish/*
+        7z a release.zip ./publish/**
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ github.event.release.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./release.zip
         asset_name: release.zip
         asset_content_type: application/zip
