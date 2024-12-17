@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
     tags:
-      - 'v*' # «апускать только при создании тега (например, v1.0.0)*
+      - 'v*'
 
 jobs:
   build:
