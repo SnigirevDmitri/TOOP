@@ -1,10 +1,10 @@
-name: Build, Test and Publish
+name: Build, Test and Release
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags:
+      - 'v*' # «апускать только при создании тега (например, v1.0.0)*
 
 jobs:
   build:
@@ -28,10 +28,18 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
 
     - name: Publish
-      run: dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
+      run: dotnet publish --configuration Release --runtime win-x64 --self-contained true -o ./publish
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+    - name: Create Release Archive
+      run: |
+        7z a release.zip ./publish/*
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: published-app
-        path: ./publish
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./release.zip
+        asset_name: release.zip
+        asset_content_type: application/zip
