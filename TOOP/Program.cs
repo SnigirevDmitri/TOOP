@@ -1,2 +1,2 @@
-﻿Console.WriteLine("Hello, World!");
-Console.WriteLine("Hello!");
+﻿Console.WriteLine("Всё работает!");
+Console.ReadKey();
