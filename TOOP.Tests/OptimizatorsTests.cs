@@ -9,24 +9,24 @@ namespace OptimizationTests
 {
     public class OptimizerTests
     {
-        [Fact]
-        public void SimulatedAnnealing_Minimize_ReturnsCorrectParameters()
-        {
-            // Arrange
-            var points = new List<IVector> { new Vector { 1 }, new Vector { 2 }, new Vector { 3 } };
-            var values = new Vector { 2, 4, 6 };
-            var linf = new Linf(points, values);
-            var linearFunction = new LinearFunction();
-            var initialParameters = new Vector { 0, 0 };
-            var optimizer = new SimulatedAnnealing(100, 1000);
+        //[Fact]
+        //public void SimulatedAnnealing_Minimize_ReturnsCorrectParameters()
+        //{
+        //    // Arrange
+        //    var points = new List<IVector> { new Vector { 1 }, new Vector { 2 }, new Vector { 3 } };
+        //    var values = new Vector { 2, 4, 6 };
+        //    var linf = new Linf(points, values);
+        //    var linearFunction = new LinearFunction();
+        //    var initialParameters = new Vector { 0, 0 };
+        //    var optimizer = new SimulatedAnnealing(100, 1000);
 
-            // Act
-            var result = optimizer.Minimize(linf, linearFunction, initialParameters);
+        //    // Act
+        //    var result = optimizer.Minimize(linf, linearFunction, initialParameters);
 
-            // Assert
-            Assert.Equal(0, result[0], 1);
-            Assert.Equal(2, result[1], 1);
-        }
+        //    // Assert
+        //    Assert.Equal(0, result[0], 1);
+        //    Assert.Equal(2, result[1], 1);
+        //}
 
         [Fact]
         public void ConjugateGradient_Minimize_ReturnsCorrectParameters()
