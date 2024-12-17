@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build, Test and Publish
 
 on:
   push:
@@ -26,3 +26,12 @@ jobs:
 
     - name: Run tests
       run: dotnet test --no-restore --verbosity normal
+
+    - name: Publish
+      run: dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: published-app
+        path: ./publish
