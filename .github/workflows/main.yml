@@ -2,7 +2,8 @@ name: Build, Test and Release
 
 on:
   push:
-    branches: [ "master" ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -10,8 +11,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: '0'
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -33,25 +32,17 @@ jobs:
     - name: Create Release Archive
       run: |
         7z a release.zip ./publish/**
-
-    - name: Bump version and push tag
-      id: tag_version
-      uses: anothrNick/github-tag-action@1.64.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      with:
-        tag_prefix: 'v.1.0.'
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
-        tag_name: ${{ steps.tag_version.outputs.new_tag }}
-        release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+        tag_name: ${{ github.ref_name }}-${{ github.run_number }}
+        release_name: ${{ github.ref_name }}-${{ github.run_number }}
         draft: false
         prerelease: false
+        allowUpdates: true
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
